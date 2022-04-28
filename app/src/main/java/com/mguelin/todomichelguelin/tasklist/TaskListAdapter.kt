@@ -9,18 +9,20 @@ import com.mguelin.todomichelguelin.R
 
 class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>() {
 
-    var currentList: List<Task> = emptyList() // À supprimer
+    var currentList: List<Task> = emptyList()
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val textView: TextView = itemView.findViewById(R.id.task_title)
+        private val titleView: TextView = itemView.findViewById(R.id.task_title)
+        private val descView: TextView = itemView.findViewById(R.id.task_description)
 
-        fun bind(taskTitle: String) {
-            textView.text = taskTitle
+        fun bind(task: Task) {
+            titleView.text = task.title
+            descView.text = task.description
         }
     }
 
     override fun getItemCount(): Int {
-        return currentList.size // À supprimer
+        return currentList.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
@@ -29,7 +31,6 @@ class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bind(currentList[position].toString())
+        holder.bind(currentList[position])
     }
 }
-
