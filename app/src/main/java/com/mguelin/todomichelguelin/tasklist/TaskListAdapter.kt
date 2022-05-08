@@ -17,7 +17,7 @@ object ItemsDiffCallback : DiffUtil.ItemCallback<Task>() {
     }
 
     override fun areContentsTheSame(oldItem: Task, newItem: Task) : Boolean {
-        return oldItem.title == newItem.title
+        return oldItem.equals(newItem)
     }
 }
 
@@ -27,24 +27,18 @@ class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(ItemsD
     var onClickEdit: (Task) -> Unit = {}
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val titleView: TextView = itemView.findViewById(R.id.task_title)
-        private val descView: TextView = itemView.findViewById(R.id.task_description)
-
-        private val deleteButton: Button = itemView.findViewById(R.id.delete)
-        private val editButton: Button = itemView.findViewById(R.id.edit)
-
 
         fun bind(task: Task) {
+
+            val titleView = itemView.findViewById<TextView>(R.id.task_title)
             titleView.text = task.title
+            val descView = itemView.findViewById<TextView>(R.id.task_description)
             descView.text = task.description
 
-            editButton.setOnClickListener {
-                onClickEdit(task)
-            }
-
-            deleteButton.setOnClickListener {
-                onClickDelete(task)
-            }
+            val deleteButton = itemView.findViewById<Button>(R.id.delete)
+            deleteButton.setOnClickListener { onClickDelete(task) }
+            val editButton = itemView.findViewById<Button>(R.id.edit)
+            editButton.setOnClickListener { onClickEdit(task) }
         }
     }
 

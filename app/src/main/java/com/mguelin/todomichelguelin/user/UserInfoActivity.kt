@@ -26,27 +26,29 @@ import java.util.jar.Manifest
 
 class UserInfoActivity : AppCompatActivity() {
     private val getPhoto = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
-        val imageView = findViewById<ImageView>(R.id.avatar_image_view)
-        imageView.load(bitmap)
+        val avatar = findViewById<ImageView>(R.id.avatar_image_view)
+        avatar.load(bitmap)
         lifecycleScope.launch {
             if(bitmap != null) {
                 val userInfo = Api.userWebService.updateAvatar(bitmap.toRequestBody()).body()
-                imageView.load(userInfo?.avatar)
+                avatar.load(userInfo?.avatar)
             }
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_info)
         val photoTake = findViewById<Button>(R.id.take_picture_button)
-        photoTake.setOnClickListener { launchCameraWithPermission()}
+        photoTake.setOnClickListener { launchCameraWithPermission() }
     }
-    private val requestCamera =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { accepted ->
-            if (accepted) getPhoto.launch()
 
-            else showMessage(message = "Désolé vous n'avez pas le droit")
-        }
+    private val requestCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()) { accepted ->
+        if (accepted) getPhoto.launch()
+
+        else showMessage(message = "Désolé, vous n'êtes pas autorisé")
+    }
+
     private fun showMessage(message: String) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
             .setAction("Open Settings") {
@@ -58,23 +60,23 @@ class UserInfoActivity : AppCompatActivity() {
             }
             .show()
     }
+
     private fun launchCameraWithPermission() {
         val camPermission = android.Manifest.permission.CAMERA
         val permissionStatus = checkSelfPermission(camPermission)
         val isAlreadyAccepted = permissionStatus == PackageManager.PERMISSION_GRANTED
         val isExplanationNeeded = shouldShowRequestPermissionRationale(camPermission)
         when {
-            isAlreadyAccepted -> getPhoto.launch()// lancer l'action souhaitée
-            isExplanationNeeded -> showMessage(message = "t'as le seum")// afficher une explication
-            else -> requestCamera.launch(camPermission)// lancer la demande de permission
+            isAlreadyAccepted -> getPhoto.launch()
+            isExplanationNeeded -> showMessage(message = "")
+            else -> requestCamera.launch(camPermission)
         }
     }
-
 
     private fun Bitmap.toRequestBody(): MultipartBody.Part {
         val tmpFile = File.createTempFile("avatar", "jpeg")
         tmpFile.outputStream().use {
-            this.compress(Bitmap.CompressFormat.JPEG, 100, it) // this est le bitmap dans ce contexte
+            this.compress(Bitmap.CompressFormat.JPEG, 100, it)
         }
         return MultipartBody.Part.createFormData(
             name = "avatar",

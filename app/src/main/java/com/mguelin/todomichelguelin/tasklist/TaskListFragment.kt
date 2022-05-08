@@ -17,11 +17,9 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.mguelin.todomichelguelin.R
 import com.mguelin.todomichelguelin.network.Api
-import com.mguelin.todomichelguelin.network.TaskListViewModel
 import com.mguelin.todomichelguelin.form.FormActivity
 import com.mguelin.todomichelguelin.user.UserInfoActivity
 import kotlinx.coroutines.launch
-import java.util.*
 
 class TaskListFragment : Fragment() {
 
@@ -76,16 +74,13 @@ class TaskListFragment : Fragment() {
         super.onResume()
         viewModel.refresh()
         val tmp = requireView().findViewById<TextView>(R.id.id)
-        val imageView = requireView().findViewById<ImageView>(R.id.avatar_image_view)
+        var avatar = view?.findViewById<ImageView>(R.id.avatar_image_view)
         lifecycleScope.launch {
             val userInfo = Api.userWebService.getInfo().body()!!
             tmp.text = "Bonjour " + userInfo.firstName + " " + userInfo.lastName
-            imageView?.load("https://goo.gl/gEgYUd") {
+            avatar?.load(userInfo.avatar) {
                 transformations(CircleCropTransformation())
             }
-        }
-        imageView.setOnClickListener {
-            startActivity(Intent(context, UserInfoActivity::class.java))
         }
     }
 }
